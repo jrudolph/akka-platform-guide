@@ -6,12 +6,22 @@ services:
 git:
   depth: 500
 
+env:
+  global:
+    - JAVA_HOME=/usr/lib/jvm/adoptopenjdk-11-hotspot-amd64
+    - PATH=/usr/lib/jvm/adoptopenjdk-11-hotspot-amd64/bin:$PATH
+
+addons:
+  apt:
+    sources:
+      # Official debian package for AdoptOpenJDK from https://adoptopenjdk.net/installation.html#linux-pkg
+      - sourceline: deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ xenial main
+        key_url: https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public
+    packages:
+      - adoptopenjdk-11-hotspot
+
 before_install:
-  # using jabba for custom jdk management
-  - if [ ! -f ~/.jabba/jabba.sh ]; then curl -L -v --retry 5 -o jabba-install.sh https://raw.githubusercontent.com/shyiko/jabba/0.11.2/install.sh && bash jabba-install.sh; fi
-  - . ~/.jabba/jabba.sh
-  - jabba install ${JDK:=adopt@~1.11-0}
-  - jabba use ${JDK:=adopt@~1.11-0}
+  - java -version
 
 jobs:
   include:
@@ -117,7 +127,6 @@ cache:
    - $HOME/.sbt/boot
    - $HOME/.sbt/launchers
    - $HOME/.cache/coursier
-   - $HOME/.jabba
 
 # safelist
 branches:
